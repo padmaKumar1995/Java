@@ -35,6 +35,7 @@ public class FanInFanOut {
                 printNext();
             }
 
+            //print 41-50 using parallel threads
             for(int j = 0; j < threadCount; j++) {
                 threads.add(new Thread(() -> {
                     while (i <= 40) {
