@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class Streams {
 
@@ -15,8 +16,10 @@ public class Streams {
                 new Employee("sankar", 26)
         );
 
-        employees.stream().filter(distinctByKey(p -> p.name))
-                .forEach(e -> System.out.println(e.name));
+        //employees.stream().filter(distinctByKey(p -> p.name))
+          //      .forEach(e -> System.out.println(e.name));
+
+        secondHighestFromMap();
     }
 
     public void testStream() {
@@ -52,5 +55,49 @@ public class Streams {
             this.name = name;
             this.age = age;
         }
+    }
+
+    public static void secondHighestFromMap() {
+        Map<String, Integer> map = new HashMap<>();
+        map.put("A", 10);
+        map.put("B", 20);
+        map.put("C", 30);
+        map.put("D", 20);
+        map.put("E", 10);
+
+        //convert to a list and create stream
+        List<Map.Entry<String, Integer>> list = new ArrayList<>(map.entrySet());
+        Optional<Map.Entry<String, Integer>> secondHighest = list.stream()
+                .sorted((e1, e2) -> e2.getValue().compareTo(e1.getValue())) //sort in descding order
+                .skip(1) //skip the highest one
+                .findFirst();
+
+        if(secondHighest.isPresent()) {
+            Map.Entry<String, Integer> entry = secondHighest.get();
+            System.out.println(entry.getKey() + "-" + entry.getValue());
+        }
+
+
+
+
+        // Find the second highest value
+        Collection<Integer> values = map.values();
+        TreeSet<Integer> sortedValues = new TreeSet<>(values);
+        Integer secondHighestValue = sortedValues.lower(sortedValues.last());
+
+        // Get entries with the second highest value
+        List<Map.Entry<String, Integer>> secondHighestEntries = map.entrySet().stream()
+                .filter(entry -> entry.getValue().equals(secondHighestValue))
+                .collect(Collectors.toList());
+
+        if (!secondHighestEntries.isEmpty()) {
+            System.out.println("Entries with second highest value:");
+            for (Map.Entry<String, Integer> entry : secondHighestEntries) {
+                System.out.println("Key: " + entry.getKey() + ", Value: " + entry.getValue());
+            }
+        } else {
+            System.out.println("No entries with second highest value found.");
+        }
+
     }
 }
